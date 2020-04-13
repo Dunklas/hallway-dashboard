@@ -14,7 +14,6 @@ struct EmptyOutput {}
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Debug)?;
     lambda!(handleRequest);
-
     Ok(())
 }
 
