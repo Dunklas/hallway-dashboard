@@ -3,6 +3,9 @@ name: Post merge
 on:
   push:
     branches: [ master ]
+    paths:
+    - 'hallway-dashboard-be/**'
+    - 'template.yml'
 
 jobs:
 
@@ -25,7 +28,11 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
+    - name: Calculate lambda SHA256
+      run: LAMBDA_SHA256=`sha256sum hallway-dashboard-be/lambda.zip | cut -d" " -f1`
     - name: Upload lambda to S3
-      run: aws s3 cp hallway-dashboard-be/lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard
+      run: aws s3 cp hallway-dashboard-be/lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$LAMBDA_SHA256
+    - name: Update S3 key for lambda
+      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$LAMBDA_SHA256/" template.yml
     - name: Deploy to AWS
       run: aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --parameter-overrides S3ArtifactBucket=${{ secrets.S3_ARTIFACT_BUCKET }} --no-fail-on-empty-changeset
