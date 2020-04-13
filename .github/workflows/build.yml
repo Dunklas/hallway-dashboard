@@ -16,7 +16,7 @@ jobs:
     - name: Run tests
       run: (cd hallway-dashboard-be && cargo test --verbose)
     - name: Install musl-tools
-      run: apt install musl-tools -y
+      run: sudo apt install musl-tools -y
     - name: Add target
       run: rustup target add x86_64-unknown-linux-musl
     - name: Build
