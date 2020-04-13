@@ -24,7 +24,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
-        name: $GITHUB_RUN_ID-lambda.zip
+        name: lambda.zip
         path: hallway-dashboard-be/lambda.zip
 
   deploy:
@@ -35,11 +35,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v1
       with:
-        name: $GITHUB_RUN_ID-lambda.zip
-    - name: Debug path
-      run: |
-        pwd
-        ls -ll
+        name: lambda.zip
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -47,7 +43,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
     - name: Upload lambda to S3
-      run: aws s3 cp $GITHUB_RUN_ID-lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard
+      run: aws s3 cp lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard
     - name: Deploy to AWS
       run: aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --parameter-overrides S3ArtifactBucket=${{ secrets.S3_ARTIFACT_BUCKET }}
 
