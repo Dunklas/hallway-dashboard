@@ -25,7 +25,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: lambda.zip
-        path: hallway-dashboard-be/lambda.zip
+        path: hallway-dashboard-be
 
   deploy:
     runs-on: ubuntu-latest
