@@ -24,8 +24,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
-        name: lambda.zip
-        path: $GITHUB_RUN_ID-lambda.zip
+        name: $GITHUB_RUN_ID-lambda.zip
+        path: hallway-dashboard-be/lambda.zip
 
   deploy:
     runs-on: ubuntu-latest
