@@ -1,4 +1,4 @@
-name: Lint and test
+name: Pre merge
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  lint:
+  cfn-lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -15,7 +15,7 @@ jobs:
       with:
         args: template.yml
 
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
