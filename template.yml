@@ -38,6 +38,6 @@ Resources:
       Code:
         S3Bucket:
           Ref: S3ArtifactBucket
-        S3Key: hallway-dashboard
+        S3Key: S3-KEY-SET-IN-PIPELINE
       Handler: doesnt.matter
       Runtime: provided
