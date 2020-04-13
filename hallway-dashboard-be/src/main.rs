@@ -22,7 +22,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// https://robertohuertas.com/2018/12/02/aws-lambda-rust/
 fn handleRequest(e: EchoEvent, c: Context) -> Result<CustomOutput, HandlerError> {
     Ok(CustomOutput {
         message: e.message,
