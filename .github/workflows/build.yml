@@ -36,6 +36,12 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: lambda.zip
+    - name: Debug deploy
+      run: |
+        pwd
+        ls -ll
+        file lambda.zip
+        ls lambda.zip
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
