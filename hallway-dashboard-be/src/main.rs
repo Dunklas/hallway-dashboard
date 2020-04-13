@@ -6,14 +6,10 @@ use simple_logger;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
-struct EchoEvent {
-    message: String,
-}
+struct EmptyEvent {}
 
 #[derive(Serialize)]
-struct CustomOutput {
-    message: String,
-}
+struct EmptyOutput {}
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Debug)?;
@@ -22,8 +18,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn handleRequest(e: EchoEvent, c: Context) -> Result<CustomOutput, HandlerError> {
-    Ok(CustomOutput {
-        message: e.message,
-    })
+fn handleRequest(e: EmptyEvent, c: Context) -> Result<EmptyOutput, HandlerError> {
+    Ok(EmptyOutput {})
 }
