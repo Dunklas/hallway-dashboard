@@ -36,12 +36,6 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: lambda-artifact
-    - name: Debug deploy
-      run: |
-        pwd
-        ls -ll
-        ls -ll lambda-artifact
-        file lambda-artifact/lambda.zip
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -51,5 +45,4 @@ jobs:
     - name: Upload lambda to S3
       run: aws s3 cp lambda-artifact/lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard
     - name: Deploy to AWS
-      run: aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --parameter-overrides S3ArtifactBucket=${{ secrets.S3_ARTIFACT_BUCKET }}
-
+      run: aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --parameter-overrides S3ArtifactBucket=${{ secrets.S3_ARTIFACT_BUCKET }} --no-fail-on-empty-changeset
