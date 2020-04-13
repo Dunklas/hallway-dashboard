@@ -6,16 +6,16 @@ on:
 
 jobs:
 
-  cfn-lint:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: cfn-lint
+    - name: CloudFormation Lint
       uses: scottbrenner/cfn-lint-action@master
       with:
         args: template.yml
 
-  unit-tests:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
