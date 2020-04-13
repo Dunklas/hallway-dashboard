@@ -36,6 +36,10 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: $GITHUB_RUN_ID-lambda.zip
+    - name: Debug path:
+      run: |
+        pwd
+        ls -ll
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
