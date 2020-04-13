@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Hallway Dashboard
+  Showing public transport and weather for a given coordinate
+
+Parameters:
+  S3ArtifactBucket:
+    Type: String
+    Description: S3 bucket where lambda artifacts are stored
+
+Resources:
+  DashboardLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+  DashboardLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt DashboardLambdaRole.Arn
+      Code:
+        S3Bucket:
+          Ref: S3ArtifactBucket
+        S3Key: hallway-dashboard
+      Handler: doesnt.matter
+      Runtime: provided
