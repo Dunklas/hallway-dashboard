@@ -1,7 +1,9 @@
+mod weather;
+
 use std::error::Error;
 
 use lambda_runtime::{error::HandlerError, lambda, Context};
-use log::{self, error};
+use log::{self, error, info};
 use simple_logger;
 use serde_derive::{Deserialize, Serialize};
 
@@ -18,5 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn handleRequest(e: EmptyEvent, c: Context) -> Result<EmptyOutput, HandlerError> {
+    let weather_result = weather::get_weather();
+    match weather_result {
+        Some(weather) => info!("Weather downloaded"),
+        None => error!("No weather downloaded :("),
+    }
     Ok(EmptyOutput {})
 }
