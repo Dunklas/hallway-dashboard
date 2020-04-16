@@ -1,11 +1,11 @@
-mod weather;
-
 use std::error::Error;
 
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use log::{self, error, info};
 use simple_logger;
 use serde_derive::{Deserialize, Serialize};
+
+mod weather;
 
 #[derive(Deserialize)]
 struct EmptyEvent {}

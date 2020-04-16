@@ -20,3 +20,18 @@ pub fn get_weather() -> Option<Vec<Weather>> {
     let weather = Vec::<Weather>::new();
     return Some(weather);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockito::mock;
+
+    #[test]
+    fn test_weather() {
+        let mock = mock("GET", "/forecast")
+            .with_status(200)
+           .create();
+        get_weather();
+        mock.assert()
+    }
+}
