@@ -20,10 +20,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn handleRequest(e: EmptyEvent, c: Context) -> Result<EmptyOutput, HandlerError> {
-    let weather_result = weather::get_weather();
-    match weather_result {
-        Some(weather) => info!("Weather downloaded"),
-        None => error!("No weather downloaded :("),
-    }
+    weather::get_weather();
     Ok(EmptyOutput {})
 }

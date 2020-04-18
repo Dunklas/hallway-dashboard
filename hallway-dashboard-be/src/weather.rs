@@ -1,6 +1,10 @@
 extern crate chrono;
+extern crate curl;
 use chrono::{DateTime, Utc};
 use std::error::Error;
+use std::io::{stdout, Write};
+
+use curl::easy::Easy;
 
 pub struct Weather {
     latitude: f64,
@@ -16,9 +20,24 @@ pub struct Weather {
     wind_bearing: i64,
 }
 
-pub fn get_weather() -> Option<Vec<Weather>> {
-    let weather = Vec::<Weather>::new();
-    return Some(weather);
+pub fn get_weather() {
+    #[cfg(test)]
+    use mockito;
+
+    #[cfg(not(test))]
+    let url = "https://api.darksky.net";
+
+    #[cfg(test)]
+    let url = &mockito::server_url();
+
+    println!("Making request");
+    let mut easy = Easy::new();
+    easy.url(&[url, "/forecast"].join("")).unwrap();
+    easy.write_function(|data| {
+        println!("Response");
+        Ok(stdout().write(data).unwrap())
+    }).unwrap();
+    easy.perform().unwrap();
 }
 
 #[cfg(test)]
@@ -30,7 +49,7 @@ mod tests {
     fn test_weather() {
         let mock = mock("GET", "/forecast")
             .with_status(200)
-           .create();
+            .create();
         get_weather();
         mock.assert()
     }

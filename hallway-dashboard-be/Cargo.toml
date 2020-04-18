@@ -17,6 +17,7 @@ serde_json = "1.0.33"
 log = "0.4.8"
 simple_logger = "1.6.0"
 chrono = "0.4.11"
+curl = "0.4.28"
 
 [dev-dependencies]
 mockito = "0.25.1"
