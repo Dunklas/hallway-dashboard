@@ -1,9 +1,9 @@
 extern crate chrono;
 extern crate curl;
+
 use chrono::{DateTime, Utc};
 use std::error::Error;
 use std::io::{stdout, Write};
-
 use curl::easy::Easy;
 
 pub struct Weather {
@@ -20,19 +20,20 @@ pub struct Weather {
     wind_bearing: i64,
 }
 
-pub fn get_weather() {
+fn server_url() -> String {
     #[cfg(test)]
     use mockito;
-
     #[cfg(not(test))]
-    let url = "https://api.darksky.net";
-
+    let url = String::from("https://api.darksky.net");
     #[cfg(test)]
-    let url = &mockito::server_url();
+    let url = mockito::server_url();
+    return url;
+}
 
+pub fn get_weather() {
     println!("Making request");
     let mut easy = Easy::new();
-    easy.url(&[url, "/forecast"].join("")).unwrap();
+    easy.url(&[server_url(), String::from("/forecast")].join("")).unwrap();
     easy.write_function(|data| {
         println!("Response");
         Ok(stdout().write(data).unwrap())
