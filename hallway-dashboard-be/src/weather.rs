@@ -29,7 +29,7 @@ fn server_url() -> String {
 
 pub fn get_weather() {
     let mut easy = Easy::new();
-    easy.url(&[server_url(), String::from("/forecast")].join("")).unwrap();
+    easy.url(&[server_url(), String::from("/forecast/APIKEY/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags")].join("")).unwrap();
     easy.write_function(|data| {
         Ok(stdout().write(data).unwrap())
     }).unwrap();
@@ -39,12 +39,14 @@ pub fn get_weather() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito::mock;
+    use mockito::{mock, Matcher};
 
     #[test]
     fn test_weather() {
-        let mock = mock("GET", "/forecast")
+        let mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+            .with_header("content-type", "application/json; charset=utf-8")
             .with_status(200)
+            .with_body_from_file("files/weather.json")
             .create();
         get_weather();
         mock.assert()
