@@ -2,7 +2,7 @@ use std::error::Error;
 
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use simple_logger;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 mod weather;
 
@@ -19,6 +19,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn handle_request(_e: EmptyEvent, _c: Context) -> Result<EmptyOutput, HandlerError> {
-    weather::get_weather();
+    weather::get_weather_forecast();
     Ok(EmptyOutput {})
 }
