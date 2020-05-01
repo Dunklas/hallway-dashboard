@@ -3,8 +3,9 @@ extern crate curl;
 
 use chrono::{DateTime, Utc};
 use chrono::serde::ts_seconds;
-use curl::easy::Easy;
+use curl::easy;
 use serde::{Serialize, Deserialize};
+use std::fmt;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Weather {
@@ -40,6 +41,19 @@ struct Response {
     hourly: Hourly,
 }
 
+pub struct WeatherError;
+
+impl fmt::Display for WeatherError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "An error occured while fetching weather data")
+    }
+}
+impl fmt::Debug for WeatherError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ file: {}, line: {} }}", file!(), line!())
+    }
+}
+
 fn server_url() -> String {
     #[cfg(not(test))]
     let url = String::from("https://api.darksky.net");
@@ -48,26 +62,30 @@ fn server_url() -> String {
     return url;
 }
 
-pub fn get_weather_forecast() -> Vec<Weather> {
-    let raw_response = get_weather_via_http();
+pub fn get_weather_forecast() -> Result<Vec<Weather>, WeatherError> {
+    let raw_response = match get_weather_via_http() {
+        Ok(raw) => raw,
+        Err(e) => {
+            return Err(WeatherError);
+        }
+    };
     let response = serde_json::from_slice::<Response>(raw_response.as_slice()).unwrap();
-    return response.hourly.data;
+    return Ok(response.hourly.data);
 }
 
-fn get_weather_via_http() -> Vec::<u8> {
-    let mut easy = Easy::new();
+fn get_weather_via_http() -> Result<Vec::<u8>, curl::Error> {
+    let mut easy = easy::Easy::new();
     let mut buf = Vec::new();
-    easy.url(&[server_url(), String::from("/forecast/APIKEY/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags")].join(""))
-        .unwrap();
+    easy.url(&[server_url(), String::from("/forecast/APIKEY/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags")].join(""))?;
     {
         let mut transfer = easy.transfer();
         transfer.write_function(|data| {
             buf.extend_from_slice(data);
             Ok(data.len())
-        }).unwrap();
-        transfer.perform().unwrap();
+        })?;
+        transfer.perform()?;
     }
-    return buf.clone();
+    return Ok(buf.clone());
 }
 
 #[cfg(test)]
@@ -83,8 +101,11 @@ mod tests {
             .with_status(200)
             .with_body_from_file("files/weather.json")
             .create();
-        let weather_forecast = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast();
         mock.assert();
+        assert!(weather_forecast_response.is_ok());
+
+        let weather_forecast = weather_forecast_response.unwrap();
         assert_eq!(26, weather_forecast.len());
 
         let weather = weather_forecast.get(0).unwrap();
