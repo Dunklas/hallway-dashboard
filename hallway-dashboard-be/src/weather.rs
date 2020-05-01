@@ -41,11 +41,13 @@ struct Response {
     hourly: Hourly,
 }
 
-pub struct WeatherError;
+pub struct WeatherError {
+    message: String
+}
 
 impl fmt::Display for WeatherError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "An error occured while fetching weather data")
+        write!(f, "WeatherError: {}", self.message)
     }
 }
 impl fmt::Debug for WeatherError {
@@ -65,17 +67,28 @@ fn server_url() -> String {
 pub fn get_weather_forecast() -> Result<Vec<Weather>, WeatherError> {
     let raw_response = match get_weather_via_http() {
         Ok(raw) => raw,
-        Err(e) => {
-            return Err(WeatherError);
+        Err(_e) => {
+            return Err(WeatherError{
+                message: "Failed while making weather API call".to_string()
+            });
         }
     };
-    let response = serde_json::from_slice::<Response>(raw_response.as_slice()).unwrap();
+
+    let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
+        Ok(parsed) => parsed,
+        Err(_e) => {
+            return Err(WeatherError{
+                message: "Failed while parsing weather API response".to_string()
+            });
+        }
+    };
     return Ok(response.hourly.data);
 }
 
 fn get_weather_via_http() -> Result<Vec::<u8>, curl::Error> {
     let mut easy = easy::Easy::new();
     let mut buf = Vec::new();
+    easy.fail_on_error(true)?;
     easy.url(&[server_url(), String::from("/forecast/APIKEY/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags")].join(""))?;
     {
         let mut transfer = easy.transfer();
@@ -119,5 +132,47 @@ mod tests {
         assert!(4.77.approx_eq(weather.wind_gust.unwrap(), (0.0, 2)));
         assert!(3.9.approx_eq(weather.wind_speed.unwrap(), (0.0, 2)));
         assert_eq!(72, weather.wind_bearing.unwrap());
+    }
+
+    #[test]
+    fn test_weather_5xx_error() {
+        let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+            .with_status(500);
+        let weather_forecast_response = get_weather_forecast();
+        assert!(weather_forecast_response.is_err());
+        assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
+    }
+
+    #[test]
+    fn test_weather_4xx_error() {
+        let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+            .with_status(400);
+        let weather_forecast_response = get_weather_forecast();
+        assert!(weather_forecast_response.is_err());
+        assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
+    }
+
+    #[test]
+    fn test_weather_json_bad_structure() {
+        let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+            .with_header("content-type", "application/json; charset=utf-8")
+            .with_status(200)
+            .with_body_from_file("files/weather_bad_structure.json")
+            .create();
+        let weather_forecast_response = get_weather_forecast();
+        assert!(weather_forecast_response.is_err());
+        assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
+    }
+
+    #[test]
+    fn test_weather_not_json() {
+        let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+            .with_header("content-type", "application/json; charset=utf-8")
+            .with_status(200)
+            .with_body("Some messed up body")
+            .create();
+        let weather_forecast_response = get_weather_forecast();
+        assert!(weather_forecast_response.is_err());
+        assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
     }
 }
