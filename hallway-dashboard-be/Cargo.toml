@@ -11,8 +11,13 @@ path = "src/main.rs"
 
 [dependencies]
 lambda_runtime = "0.2.1"
-serde = "1.0.80"
-serde_derive = "1.0.80"
-serde_json = "1.0.33"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 log = "0.4.8"
 simple_logger = "1.6.0"
+chrono = { version = "0.4", features = ["serde"] }
+curl = "0.4.28"
+
+[dev-dependencies]
+mockito = "0.25.1"
+float-cmp = "0.6.0"
