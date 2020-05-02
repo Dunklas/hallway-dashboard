@@ -43,6 +43,7 @@ Resources:
         S3Key: S3-KEY-SET-IN-PIPELINE
       Handler: doesnt.matter
       Runtime: provided
+      Timeout: 10
       Environment:
         Variables:
           DARK_SKY_API_KEY: !Ref DarkSkyApiKey
