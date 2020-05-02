@@ -7,7 +7,9 @@ Parameters:
   S3ArtifactBucket:
     Type: String
     Description: S3 bucket where lambda artifacts are stored
-
+  DarkSkyApiKey:
+    Type: String
+    Description: API
 Resources:
   DashboardLambdaRole:
     Type: AWS::IAM::Role
@@ -41,3 +43,6 @@ Resources:
         S3Key: S3-KEY-SET-IN-PIPELINE
       Handler: doesnt.matter
       Runtime: provided
+      Environment:
+        Variables:
+          DARK_SKY_API_KEY: !Ref DarkSkyApiKey

@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::env;
 
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use simple_logger;
@@ -19,6 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn handle_request(_e: EmptyEvent, _c: Context) -> Result<EmptyOutput, HandlerError> {
-    weather::get_weather_forecast();
+    let dark_sky_api_key = env::var("DARK_SKY_API_KEY").unwrap();
+    let _weather = weather::get_weather_forecast(dark_sky_api_key);
     Ok(EmptyOutput {})
 }

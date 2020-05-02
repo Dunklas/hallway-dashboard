@@ -64,8 +64,8 @@ fn server_url() -> String {
     return url;
 }
 
-pub fn get_weather_forecast() -> Result<Vec<Weather>, WeatherError> {
-    let raw_response = match get_weather_via_http() {
+pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherError> {
+    let raw_response = match get_weather_via_http(api_key) {
         Ok(raw) => raw,
         Err(_e) => {
             return Err(WeatherError{
@@ -85,11 +85,11 @@ pub fn get_weather_forecast() -> Result<Vec<Weather>, WeatherError> {
     return Ok(response.hourly.data);
 }
 
-fn get_weather_via_http() -> Result<Vec::<u8>, curl::Error> {
+fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, curl::Error> {
     let mut easy = easy::Easy::new();
     let mut buf = Vec::new();
     easy.fail_on_error(true)?;
-    easy.url(&[server_url(), String::from("/forecast/APIKEY/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags")].join(""))?;
+    easy.url(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))?;
     {
         let mut transfer = easy.transfer();
         transfer.write_function(|data| {
@@ -114,7 +114,7 @@ mod tests {
             .with_status(200)
             .with_body_from_file("files/weather.json")
             .create();
-        let weather_forecast_response = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
         mock.assert();
         assert!(weather_forecast_response.is_ok());
 
@@ -138,7 +138,7 @@ mod tests {
     fn test_weather_5xx_error() {
         let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_status(500);
-        let weather_forecast_response = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
     }
@@ -147,7 +147,7 @@ mod tests {
     fn test_weather_4xx_error() {
         let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_status(400);
-        let weather_forecast_response = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
     }
@@ -159,7 +159,7 @@ mod tests {
             .with_status(200)
             .with_body_from_file("files/weather_bad_structure.json")
             .create();
-        let weather_forecast_response = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
     }
@@ -171,7 +171,7 @@ mod tests {
             .with_status(200)
             .with_body("Some messed up body")
             .create();
-        let weather_forecast_response = get_weather_forecast();
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
     }
