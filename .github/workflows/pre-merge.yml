@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install required tools
-      run: sudo apt install musl-tools pkg-config libssl-dev -y
+      run: sudo apt install musl-tools -y
     - name: Add target
       run: rustup target add x86_64-unknown-linux-musl
     - name: Build
