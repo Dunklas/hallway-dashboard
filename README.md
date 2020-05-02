@@ -2,5 +2,8 @@
 App to show public transport and weather for a given coordinate.
 
 ## Prerequisites
- - musl-tools (for building lambda)
+ - musl-tools
+   - For building lambda
+ - libssl-dev
+   - For creating release build on Ubuntu (not sure about Arch Linux yet..)
 
