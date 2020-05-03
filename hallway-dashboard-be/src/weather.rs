@@ -65,10 +65,7 @@ fn server_url() -> String {
 }
 
 pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherError> {
-    debug!("get_weather_via_http()");
     let raw_response = get_weather_via_http(api_key)?;
-
-    debug!("parse json");
     let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
         Ok(parsed) => parsed,
         Err(_e) => {
@@ -77,12 +74,10 @@ pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherErro
             });
         }
     };
-    debug!("about to return");
     return Ok(response.hourly.data);
 }
 
 fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, WeatherError> {
-    debug!("get_weather_via_http - start");
     let res = ureq::get(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))
         .call();
     if !res.ok() {
