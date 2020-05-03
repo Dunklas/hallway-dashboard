@@ -1,9 +1,8 @@
 extern crate chrono;
-extern crate curl;
+extern crate ureq;
 
 use chrono::{DateTime, Utc};
 use chrono::serde::ts_seconds;
-use curl::easy;
 use serde::{Serialize, Deserialize};
 use log::{self, debug};
 use std::fmt;
@@ -67,14 +66,7 @@ fn server_url() -> String {
 
 pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherError> {
     debug!("get_weather_via_http()");
-    let raw_response = match get_weather_via_http(api_key) {
-        Ok(raw) => raw,
-        Err(_e) => {
-            return Err(WeatherError{
-                message: "Failed while making weather API call".to_string()
-            });
-        }
-    };
+    let raw_response = get_weather_via_http(api_key)?;
 
     debug!("parse json");
     let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
@@ -89,25 +81,24 @@ pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherErro
     return Ok(response.hourly.data);
 }
 
-fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, curl::Error> {
+fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, WeatherError> {
     debug!("get_weather_via_http - start");
-    let mut easy = easy::Easy::new();
-    let mut buf = Vec::new();
-    easy.fail_on_error(true)?;
-    debug!("get_weather_via_http - call url()");
-    easy.url(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))?;
-    {
-        let mut transfer = easy.transfer();
-        debug!("get_weather_via_http - declare write closure");
-        transfer.write_function(|data| {
-            buf.extend_from_slice(data);
-            Ok(data.len())
-        })?;
-        debug!("get_weather_via_http - perform");
-        transfer.perform()?;
+    let res = ureq::get(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))
+        .call();
+    if !res.ok() {
+        return Err(WeatherError{
+            message: "Failed while making weather API call".to_string()
+        });
     }
-    debug!("get_weather_via_http - about to return");
-    return Ok(buf.clone());
+    let bytes = match res.into_string() {
+        Ok(text) => text.into_bytes(),
+        Err(_e) => {
+            return Err(WeatherError{
+                message: "Failed while making weather API call".to_string()
+            });
+        }
+    };
+    return Ok(bytes);
 }
 
 #[cfg(test)]
