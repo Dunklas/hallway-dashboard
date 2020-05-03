@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 use chrono::serde::ts_seconds;
 use curl::easy;
 use serde::{Serialize, Deserialize};
+use log::{self, debug};
 use std::fmt;
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -65,6 +66,7 @@ fn server_url() -> String {
 }
 
 pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherError> {
+    debug!("get_weather_via_http()");
     let raw_response = match get_weather_via_http(api_key) {
         Ok(raw) => raw,
         Err(_e) => {
@@ -74,6 +76,7 @@ pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherErro
         }
     };
 
+    debug!("parse json");
     let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
         Ok(parsed) => parsed,
         Err(_e) => {
@@ -82,22 +85,28 @@ pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherErro
             });
         }
     };
+    debug!("about to return");
     return Ok(response.hourly.data);
 }
 
 fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, curl::Error> {
+    debug!("get_weather_via_http - start");
     let mut easy = easy::Easy::new();
     let mut buf = Vec::new();
     easy.fail_on_error(true)?;
+    debug!("get_weather_via_http - call url()");
     easy.url(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))?;
     {
         let mut transfer = easy.transfer();
+        debug!("get_weather_via_http - declare write closure");
         transfer.write_function(|data| {
             buf.extend_from_slice(data);
             Ok(data.len())
         })?;
+        debug!("get_weather_via_http - perform");
         transfer.perform()?;
     }
+    debug!("get_weather_via_http - about to return");
     return Ok(buf.clone());
 }
 
