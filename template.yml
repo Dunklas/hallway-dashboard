@@ -33,6 +33,15 @@ Resources:
             Action:
             - logs:*
             Resource: arn:aws:logs:*:*:*
+      - PolicyName: DashboardStoragePolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - s3:PutObject
+            Resource: !GetAtt DashboardStorageBucket.Arn
+
   DashboardLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -46,4 +55,8 @@ Resources:
       Timeout: 10
       Environment:
         Variables:
+          AWS_REGION: !Ref AWS::Region
+          STORAGE_BUCKET: !Ref DashboardStorageBucket
           DARK_SKY_API_KEY: !Ref DarkSkyApiKey
+  DashboardStorageBucket:
+    Type: AWS::S3::Bucket
