@@ -55,7 +55,6 @@ Resources:
       Timeout: 10
       Environment:
         Variables:
-          AWS_REGION: !Ref AWS::Region
           STORAGE_BUCKET: !Ref DashboardStorageBucket
           DARK_SKY_API_KEY: !Ref DarkSkyApiKey
   DashboardStorageBucket:
