@@ -17,6 +17,8 @@ log = "0.4.8"
 simple_logger = "1.6.0"
 chrono = { version = "0.4", features = ["serde"] }
 ureq = "0.12.1"
+rusoto_core = {version = "0.43.0", default_features = false, features=["rustls"]}
+rusoto_s3 = {version = "0.43.0", default_features = false, features=["rustls"]}
 
 [dev-dependencies]
 mockito = "0.25.1"

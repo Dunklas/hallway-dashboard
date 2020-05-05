@@ -4,7 +4,6 @@ extern crate ureq;
 use chrono::{DateTime, Utc};
 use chrono::serde::ts_seconds;
 use serde::{Serialize, Deserialize};
-use log::{self, debug};
 use std::fmt;
 
 #[derive(Deserialize, Serialize, Debug)]
