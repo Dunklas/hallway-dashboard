@@ -36,7 +36,9 @@ Resources:
           - Effect: Allow
             Action:
               - s3:PutObject
-            Resource: !Sub 'arn:aws:s3:::${DashboardStorageBucket}'
+            Resource:
+              - !Sub 'arn:aws:s3:::${DashboardStorageBucket}'
+              - !Sub 'arn:aws:s3:::${DashboardStorageBucket}/*'
 
   DashboardLambda:
     Type: AWS::Lambda::Function
