@@ -8,6 +8,7 @@ use log::{self, info, warn};
 use serde::{Deserialize, Serialize};
 use rusoto_core::{Region, ByteStream};
 use rusoto_s3::{S3, S3Client, PutObjectRequest};
+use tokio::runtime::Runtime;
 
 mod weather;
 
@@ -31,7 +32,9 @@ fn handle_request(_e: EmptyEvent, _c: Context) -> Result<EmptyOutput, HandlerErr
     let s3_client = S3Client::new(aws_region);
 
     let dark_sky_api_key = env::var("DARK_SKY_API_KEY").unwrap();
-    get_and_store_weather(dark_sky_api_key, &s3_client, storage_bucket_name);
+    Runtime::new()
+        .expect("Failed to create Tokio runtime")
+        .block_on(get_and_store_weather(dark_sky_api_key, &s3_client, storage_bucket_name));
 
     Ok(EmptyOutput{})
 }
