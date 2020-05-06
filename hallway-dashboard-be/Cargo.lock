@@ -625,6 +625,7 @@ dependencies = [
  "serde",
  "serde_json",
  "simple_logger",
+ "tokio 0.2.20",
  "ureq",
 ]
 
@@ -1894,6 +1895,7 @@ dependencies = [
  "mio",
  "mio-named-pipes",
  "mio-uds",
+ "num_cpus",
  "pin-project-lite",
  "signal-hook-registry",
  "slab",
