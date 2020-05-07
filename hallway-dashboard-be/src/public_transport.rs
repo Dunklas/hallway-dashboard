@@ -17,6 +17,7 @@ pub struct Departure {
 
 #[derive(Deserialize, Debug)]
 struct ExternalDeparture {
+    stop: String,
     time: String,
     rtTime: Option<String>,
     date: String,
@@ -63,9 +64,17 @@ pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTra
             });
         }
     };
-    return Err(PublicTransportError{
-        message: "Sorry".to_string()
-    });
+    let mut transformed_response = Vec::<Departure>::new();
+    for dep in response.Departure {
+        transformed_response.push(Departure{
+            number: dep.transportNumber,
+            stop: dep.stop,
+            time: Utc::now(),
+            real_time: Some(Utc::now()),
+            direction: dep.direction
+        })
+    }
+    return Ok(transformed_response);
 }
 
 fn get_public_transport_via_http(api_key: String) -> Result<Vec::<u8>, PublicTransportError> {
@@ -107,7 +116,11 @@ mod tests {
             .with_status(200)
             .with_body_from_file("files/public_transport.json")
             .create();
-        let res = get_public_transport("SOME_KEY".to_string());
+        let public_transport_response = get_public_transport("SOME_KEY".to_string());
         mock.assert();
+        assert!(public_transport_response.is_ok());
+
+        let public_transport = public_transport_response.unwrap();
+        assert_eq!(25, public_transport.len());
     }
 }
