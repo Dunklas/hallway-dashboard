@@ -11,6 +11,7 @@ use rusoto_s3::{S3, S3Client, PutObjectRequest};
 use tokio::runtime::Runtime;
 
 mod weather;
+mod public_transport;
 
 #[derive(Deserialize)]
 struct EmptyEvent {}
