@@ -75,15 +75,23 @@ pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTra
                 });
             }
         };
+        let optional_real_time = to_datetime_from_optional(dep.rtDate, dep.rtTime);
         transformed_response.push(Departure{
             number: dep.transportNumber,
             stop: dep.stop,
             time: time,
-            real_time: Some(Utc::now()),
+            real_time: optional_real_time,
             direction: dep.direction
-        })
+        });
     }
     return Ok(transformed_response);
+}
+
+fn to_datetime_from_optional(date: Option<String>, time: Option<String>) -> Option<DateTime<Utc>> {
+    if date.is_none() || time.is_none() {
+        return None;
+    }
+    return to_datetime(date.unwrap(), time.unwrap());
 }
 
 fn to_datetime(date: String, time: String) -> Option<DateTime<Utc>> {
@@ -126,10 +134,7 @@ fn get_public_transport_via_http(api_key: String) -> Result<Vec::<u8>, PublicTra
         });
     }
     let bytes = match res.into_string() {
-        Ok(text) => {
-            println!("{}", text);
-            text.into_bytes()
-        }
+        Ok(text) => text.into_bytes(),
         Err(_e) => {
             return Err(PublicTransportError{
                 message: "Failed while making weather API call".to_string()
@@ -163,5 +168,6 @@ mod tests {
         assert_eq!("Göteborg Temperaturgatan", departure.stop);
         assert_eq!("Kortedala Aprilgatan (Göteborg kn)", departure.direction);
         assert_eq!("2020-05-07T18:50:00+00:00", departure.time.to_rfc3339());
+        assert_eq!("2020-05-07T18:52:00+00:00", departure.real_time.unwrap().to_rfc3339());
     }
 }

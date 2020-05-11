@@ -19,7 +19,9 @@
       "date" : "2020-05-07",
       "direction" : "Kortedala Aprilgatan (Göteborg kn)",
       "transportNumber" : "6",
-      "transportCategory" : "SLT"
+      "transportCategory" : "SLT",
+      "rtDate" : "2020-05-07",
+      "rtTime" : "20:52:00"
     }, {
       "Product" : {
         "name" : "Länstrafik - Buss 25",

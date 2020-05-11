@@ -37,6 +37,8 @@ fn handle_request(_e: EmptyEvent, _c: Context) -> Result<EmptyOutput, HandlerErr
         .expect("Failed to create Tokio runtime")
         .block_on(get_and_store_weather(dark_sky_api_key, &s3_client, storage_bucket_name));
 
+    public_transport::get_public_transport("asrneai".to_string());
+
     Ok(EmptyOutput{})
 }
 
