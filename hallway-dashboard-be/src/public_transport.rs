@@ -1,7 +1,8 @@
 extern crate chrono;
 extern crate ureq;
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, TimeZone, LocalResult, NaiveDateTime, NaiveDate, NaiveTime};
+use chrono_tz::Europe::Stockholm;
 use serde::{Serialize, Deserialize};
 use std::fmt;
 
@@ -60,21 +61,55 @@ pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTra
         Ok(parsed) => parsed,
         Err(_e) => {
             return Err(PublicTransportError{
-                message: "Failed while parsing weather API response".to_string()
+                message: "Failed while parsing public transport API response".to_string()
             });
         }
     };
     let mut transformed_response = Vec::<Departure>::new();
     for dep in response.Departure {
+        let time = match to_datetime(dep.date, dep.time) {
+            Some(time) => time,
+            None => {
+                return Err(PublicTransportError{
+                    message: "Failed while parsing public transport API response".to_string()
+                });
+            }
+        };
         transformed_response.push(Departure{
             number: dep.transportNumber,
             stop: dep.stop,
-            time: Utc::now(),
+            time: time,
             real_time: Some(Utc::now()),
             direction: dep.direction
         })
     }
     return Ok(transformed_response);
+}
+
+fn to_datetime(date: String, time: String) -> Option<DateTime<Utc>> {
+    let date = match NaiveDate::parse_from_str(&date, "%Y-%m-%d") {
+        Ok(parsed) => parsed,
+        Err(_e) => {
+            return None;
+        }
+    };
+    let time = match NaiveTime::parse_from_str(&time, "%H:%M:%S") {
+        Ok(parsed) => parsed,
+        Err(_e) => {
+            return None;
+        }
+    };
+    let naive_datetime = NaiveDateTime::new(date, time);
+    let sweden_time = match Stockholm.from_local_datetime(&naive_datetime) {
+        LocalResult::Single(parsed) => parsed,
+        LocalResult::Ambiguous(a, b) => {
+            return None;
+        },
+        LocalResult::None => {
+            return None;
+        }
+    };
+    return Some(sweden_time.with_timezone(&Utc));
 }
 
 fn get_public_transport_via_http(api_key: String) -> Result<Vec::<u8>, PublicTransportError> {
@@ -122,5 +157,11 @@ mod tests {
 
         let public_transport = public_transport_response.unwrap();
         assert_eq!(25, public_transport.len());
+
+        let departure = public_transport.get(0).unwrap();
+        assert_eq!("6", departure.number);
+        assert_eq!("Göteborg Temperaturgatan", departure.stop);
+        assert_eq!("Kortedala Aprilgatan (Göteborg kn)", departure.direction);
+        assert_eq!("2020-05-07T18:50:00+00:00", departure.time.to_rfc3339());
     }
 }
