@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   Hallway Dashboard
-  Showing public transport and weather for a given coordinate
+  Showing public transport departures and weather
 
 Parameters:
   S3ArtifactBucket:
@@ -9,7 +9,16 @@ Parameters:
     Description: S3 bucket where lambda artifacts are stored
   DarkSkyApiKey:
     Type: String
-    Description: API
+    Description: API Key for Dark Sky
+  TrafiklabApiKey:
+    Type: String
+    Description: API Key for Trafiklab
+  PublicTransportStop:
+    Type: String
+    Description: Stop id to show departures for
+  PublicTransportDirection:
+    Type: String
+    Description: Optional stop id to narrow down departures on a given direction
 Resources:
   DashboardLambdaRole:
     Type: AWS::IAM::Role
@@ -55,5 +64,8 @@ Resources:
         Variables:
           STORAGE_BUCKET: !Ref DashboardStorageBucket
           DARK_SKY_API_KEY: !Ref DarkSkyApiKey
+          TRAFIKLAB_API_KEY: !Ref TrafiklabApiKey
+          PUBLIC_TRANSPORT_STOP: !Ref PublicTransportStop
+          PUBLIC_TRANSPORT_DIRECTION: !Ref PublicTransportDirection
   DashboardStorageBucket:
     Type: AWS::S3::Bucket
