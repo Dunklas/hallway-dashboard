@@ -20,16 +20,20 @@ pub struct Departure {
 struct ExternalDeparture {
     stop: String,
     time: String,
-    rtTime: Option<String>,
+    #[serde(rename = "rtTime")]
+    rt_time: Option<String>,
     date: String,
-    rtDate: Option<String>,
+    #[serde(rename = "rtDate")]
+    rt_date: Option<String>,
     direction: String,
-    transportNumber: String
+    #[serde(rename = "transportNumber")]
+    transport_number: String
 }
 
 #[derive(Deserialize, Debug)]
 struct Response {
-    Departure: Vec<ExternalDeparture>
+    #[serde(rename = "Departure")]
+    departure: Vec<ExternalDeparture>
 }
 
 pub struct PublicTransportError {
@@ -66,7 +70,7 @@ pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTra
         }
     };
     let mut transformed_response = Vec::<Departure>::new();
-    for dep in response.Departure {
+    for dep in response.departure {
         let time = match to_datetime(dep.date, dep.time) {
             Some(time) => time,
             None => {
@@ -75,9 +79,9 @@ pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTra
                 });
             }
         };
-        let optional_real_time = to_datetime_from_optional(dep.rtDate, dep.rtTime);
+        let optional_real_time = to_datetime_from_optional(dep.rt_date, dep.rt_time);
         transformed_response.push(Departure{
-            number: dep.transportNumber,
+            number: dep.transport_number,
             stop: dep.stop,
             time: time,
             real_time: optional_real_time,
@@ -110,7 +114,7 @@ fn to_datetime(date: String, time: String) -> Option<DateTime<Utc>> {
     let naive_datetime = NaiveDateTime::new(date, time);
     let sweden_time = match Stockholm.from_local_datetime(&naive_datetime) {
         LocalResult::Single(parsed) => parsed,
-        LocalResult::Ambiguous(a, b) => {
+        LocalResult::Ambiguous(_a, _b) => {
             return None;
         },
         LocalResult::None => {

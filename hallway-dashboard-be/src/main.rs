@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use simple_logger;
-use log::{self, info, warn};
+use log::{self, warn};
 use serde::{Deserialize, Serialize};
 use rusoto_core::{Region, ByteStream};
 use rusoto_s3::{S3, S3Client, PutObjectRequest};
@@ -52,7 +52,7 @@ async fn get_and_store_weather(dark_sky_api_key: String, s3_client: &S3Client, b
     };
     let bytes = match serde_json::to_vec(&weather) {
         Ok(bytes) => bytes,
-        Err(e) => {
+        Err(_e) => {
             warn!("Failed to convert weather to bytes");
             return;
         }
