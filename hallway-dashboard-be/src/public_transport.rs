@@ -53,7 +53,7 @@ impl fmt::Debug for PublicTransportError {
 
 fn server_url() -> String {
     #[cfg(not(test))]
-    let url = String::from("https://api.resrobot.se/v2");
+    let url = String::from("https://api.resrobot.se");
     #[cfg(test)]
     let url = mockito::server_url();
     return url;
