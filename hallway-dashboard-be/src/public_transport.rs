@@ -42,7 +42,7 @@ pub struct PublicTransportError {
 
 impl fmt::Display for PublicTransportError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "WeatherError: {}", self.message)
+        write!(f, "PublicTransportError: {}", self.message)
     }
 }
 impl fmt::Debug for PublicTransportError {
@@ -134,14 +134,14 @@ fn get_public_transport_via_http(api_key: String, stop_id: String, direction: Op
         .call();
     if !res.ok() {
         return Err(PublicTransportError{
-            message: "Failed while making weather API call".to_string()
+            message: "Failed while making public transport API call".to_string()
         });
     }
     let bytes = match res.into_string() {
         Ok(text) => text.into_bytes(),
         Err(_e) => {
             return Err(PublicTransportError{
-                message: "Failed while making weather API call".to_string()
+                message: "Failed while making public transport API call".to_string()
             });
         }
     };
