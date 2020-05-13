@@ -59,8 +59,8 @@ fn server_url() -> String {
     return url;
 }
 
-pub fn get_public_transport(api_key: String) -> Result<Vec<Departure>, PublicTransportError> {
-    let raw_response = get_public_transport_via_http(api_key)?;
+pub fn get_public_transport(api_key: String, stop_id: String, direction: Option<String>) -> Result<Vec<Departure>, PublicTransportError> {
+    let raw_response = get_public_transport_via_http(api_key, stop_id, direction)?;
     let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
         Ok(parsed) => parsed,
         Err(_e) => {
@@ -124,13 +124,13 @@ fn to_datetime(date: String, time: String) -> Option<DateTime<Utc>> {
     return Some(sweden_time.with_timezone(&Utc));
 }
 
-fn get_public_transport_via_http(api_key: String) -> Result<Vec::<u8>, PublicTransportError> {
+fn get_public_transport_via_http(api_key: String, stop_id: String, direction: Option<String>) -> Result<Vec::<u8>, PublicTransportError> {
+    let mut query_string = format!("?key={}&id={}&passlist=0&format=json", api_key, stop_id);
+    if direction.is_some() {
+        query_string.push_str(&format!("&direction={}", direction.unwrap()));
+    }
     let res = ureq::get(&[server_url(), "/v2/departureBoard".to_string()].join(""))
-        .query("key", &api_key)
-        .query("id", "740025692")
-        .query("passlist", "0")
-        .query("format", "json")
-        .query("direction", "740015569")
+        .query_str(&query_string)
         .call();
     if !res.ok() {
         return Err(PublicTransportError{
@@ -155,12 +155,15 @@ mod tests {
 
     #[test]
     fn test_public_transport() {
-        let mock = mock("GET", Matcher::Regex(r"^/v2/departureBoard\?key=SOME_KEY&id=\d+&passlist=0&format=json.*".to_string()))
+        let api_key = "SOME_KEY".to_string();
+        let stop_id = "740025692".to_string();
+        let direction = "740015569".to_string();
+        let mock = mock("GET", Matcher::Regex(format!(r"^/v2/departureBoard\?key={}&id={}&passlist=0&format=json&direction={}$", api_key, stop_id, direction).to_string()))
             .with_header("content-type", "application/json; charset=utf-8")
             .with_status(200)
             .with_body_from_file("files/public_transport.json")
             .create();
-        let public_transport_response = get_public_transport("SOME_KEY".to_string());
+        let public_transport_response = get_public_transport(api_key, stop_id, Some(direction));
         mock.assert();
         assert!(public_transport_response.is_ok());
 
@@ -173,5 +176,18 @@ mod tests {
         assert_eq!("Kortedala Aprilgatan (Göteborg kn)", departure.direction);
         assert_eq!("2020-05-07T18:50:00+00:00", departure.time.to_rfc3339());
         assert_eq!("2020-05-07T18:52:00+00:00", departure.real_time.unwrap().to_rfc3339());
+    }
+
+    #[test]
+    fn test_skip_direction_if_not_provided() {
+        let api_key = "SOME_KEY".to_string();
+        let stop_id = "740025692".to_string();
+        let mock = mock("GET", Matcher::Regex(format!(r"^/v2/departureBoard\?key={}&id={}&passlist=0&format=json$", api_key, stop_id).to_string()))
+            .with_header("content-type", "application/json; charset=utf-8")
+            .with_status(200)
+            .with_body_from_file("files/public_transport.json")
+            .create();
+        let _ = get_public_transport(api_key, stop_id, None);
+        mock.assert();
     }
 }
