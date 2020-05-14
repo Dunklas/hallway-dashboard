@@ -48,7 +48,6 @@ Resources:
             Resource:
               - !Sub 'arn:aws:s3:::${DashboardStorageBucket}'
               - !Sub 'arn:aws:s3:::${DashboardStorageBucket}/*'
-
   DashboardLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -69,3 +68,24 @@ Resources:
           PUBLIC_TRANSPORT_DIRECTION: !Ref PublicTransportDirection
   DashboardStorageBucket:
     Type: AWS::S3::Bucket
+  DashboardLambdaEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(5 minutes)
+      Targets:
+        - Id: DashboardLambdaScheduler
+          Arn: !GetAtt DashboardLambda.Arn
+      RoleArn: !GetAtt InvokeDashboardLambdaRole.Arn
+  InvokeDashboardLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - events.amazonaws.com
+          Action:
+          - lambda:InvokeFunction
+          Resource: !GetAtt DashboardLambda.Arn
