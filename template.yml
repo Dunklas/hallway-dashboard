@@ -76,16 +76,10 @@ Resources:
         - Id: DashboardLambdaScheduler
           Arn: !GetAtt DashboardLambda.Arn
       RoleArn: !GetAtt InvokeDashboardLambdaRole.Arn
-  InvokeDashboardLambdaRole:
-    Type: AWS::IAM::Role
+  InvokeDashboardLambdaPermission:
+    Type: AWS::Lambda::Permission
     Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - events.amazonaws.com
-          Action:
-          - lambda:InvokeFunction
-          Resource: !GetAtt DashboardLambda.Arn
+      FunctionName: !Ref DashboardLambda
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DashboardLambdaEventRule.Arn
