@@ -75,7 +75,6 @@ Resources:
       Targets:
         - Id: DashboardLambdaScheduler
           Arn: !GetAtt DashboardLambda.Arn
-      RoleArn: !GetAtt InvokeDashboardLambdaRole.Arn
   InvokeDashboardLambdaPermission:
     Type: AWS::Lambda::Permission
     Properties:
