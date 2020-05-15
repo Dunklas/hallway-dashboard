@@ -6,6 +6,7 @@ on:
     paths:
     - 'hallway-dashboard-be/**'
     - 'template.yml'
+    - '.github/**'
 
 jobs:
 
