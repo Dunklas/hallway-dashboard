@@ -58,4 +58,4 @@ jobs:
     - name: Obtain S3 read access keys
       run: |
         echo "::set-env name=READ_ACCESS_KEY_ID::`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='ReadUserAccessKeyId'].OutputValue" --output text`
-        echo "::set-env name=READ_ACCESS_KEY_ID::`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='ReadUserAccessKeySecret'].OutputValue" --output text`
+        echo "::set-env name=READ_ACCESS_KEY_SECRET::`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='ReadUserAccessKeySecret'].OutputValue" --output text`
