@@ -82,3 +82,27 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt DashboardLambdaEventRule.Arn
+  ReadUser:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: !Sub 'Read-${DashboardStorageBucket}'
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource:
+              - !Sub 'arn:aws:s3:::${DashboardStorageBucket}'
+              - !Sub 'arn:aws:s3:::${DashboardStorageBucket}/*'
+  ReadUserCredentials:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref ReadUser
+Outputs:
+  ReadUserAccessKeyId:
+    Description: 'S3 Read Access Key'
+    Value: !Ref ReadUserCredentials
+  ReadUserAccessKeySecret:
+    Description: 'S3 Read Secret Key'
+    Value: !GetAtt ReadUserCredentials.SecretAccessKey
