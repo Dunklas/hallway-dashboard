@@ -1,0 +1,50 @@
+.main {
+	height: 12vh;
+	display: flex;
+	flex-direction: row;
+	font-size: 2em;
+	display: flex;
+	align-items: center;
+}
+
+.direction {
+	padding: 0px 10px 0px 2px;
+}
+
+.time {
+	padding: 0px 10px 0px 2px;
+	min-width: 10vw
+}
+
+.timeLeft {
+	padding: 0px 10px 0px 2px;
+	min-width: 6vw
+}
+
+.number {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 6vh;
+	width: 4vw;
+	margin: 0 1%;
+	border-radius: 5px 5px;
+	box-shadow: #000000 1px 1px 3px;
+	text-shadow: #000000 1px 1px 2px;
+	font-weight: 600;
+}
+
+.numberFive {
+	background-color: #EB1923;
+	color: #FFFFFF;
+}
+
+.numberSix {
+	background-color: #FA8719;
+	color: #00394D;
+}
+
+.numberDefault {
+	background-color: #00B6F1;
+	color: #FFFFFF;
+}
