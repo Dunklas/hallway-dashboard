@@ -44,4 +44,5 @@ jobs:
       - name: Build
         run: |
           cd hallway-dashboard-fe
+          yarn
           yarn run build

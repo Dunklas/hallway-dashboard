@@ -66,6 +66,7 @@ jobs:
     - name: Build frontend
       run: |
         cd hallway-dashboard-fe
+        yarn
         REACT_APP_AWS_REGION=${{ secrets.AWS_REGION }} \
         REACT_APP_S3_READ_ACCESS_KEY_ID=$READ_ACCESS_KEY_ID \
         REACT_APP_S3_READ_ACCESS_KEY_SECRET=$READ_ACCESS_KEY_SECRET \
