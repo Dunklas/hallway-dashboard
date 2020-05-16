@@ -1,0 +1,12 @@
+.main {
+	box-sizing: border-box;
+	width: 12vw;
+	height: 16vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.main p {
+	font-size: 1.8em;
+}
