@@ -28,7 +28,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-2
+        aws-region: ${{ secrets.AWS_REGION }}
     - name: Calculate lambda SHA256
       run: |
         LAMBDA_SHA256=`sha256sum hallway-dashboard-be/lambda.zip | cut -d" " -f1`
@@ -54,10 +54,20 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-2
-    - name: Obtain S3 read access key
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Obtain stack outputs
       run: |
         READ_ACCESS_KEY_ID=`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='ReadUserAccessKeyId'].OutputValue" --output text`
         READ_ACCESS_KEY_SECRET=`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='ReadUserAccessKeySecret'].OutputValue" --output text`
+        STORAGE_BUCKET_NAME=`aws cloudformation describe-stacks --stack-name hallway-dashboard --query "Stacks[0].Outputs[?OutputKey=='StorageBucketName'].OutputValue" --output text`
         echo "::set-env name=READ_ACCESS_KEY_ID::$READ_ACCESS_KEY_ID"
         echo "::set-env name=READ_ACCESS_KEY_SECRET::$READ_ACCESS_KEY_SECRET"
+        echo "::set-env name=STORAGE_BUCKET_NAME::$STORAGE_BUCKET_NAME"
+    - name: Build frontend
+      run: |
+        cd hallway-dashboard-fe
+        REACT_APP_AWS_REGION=${{ secrets.AWS_REGION }} \
+        REACT_APP_S3_READ_ACCESS_KEY_ID=$READ_ACCESS_KEY_ID \
+        REACT_APP_S3_READ_ACCESS_KEY_SECRET=$READ_ACCESS_KEY_SECRET \
+        REACT_APP_STORAGE_BUCKET=$STORAGE_BUCKET_NAME \
+        yarn run build

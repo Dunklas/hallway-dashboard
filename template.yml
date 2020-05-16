@@ -106,3 +106,6 @@ Outputs:
   ReadUserAccessKeySecret:
     Description: 'S3 Read Secret Key'
     Value: !GetAtt ReadUserCredentials.SecretAccessKey
+  StorageBucketName:
+    Description: 'Name of storage bucket'
+    Value: !Ref DashboardStorageBucket
