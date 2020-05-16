@@ -99,13 +99,97 @@ Resources:
     Type: AWS::IAM::AccessKey
     Properties:
       UserName: !Ref ReadUser
+  WebHostingBucket:
+    Type: AWS::S3::Bucket
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Ref WebHostingBucket
+  WebHostingReadPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebHostingBucket
+      PolicyDocument:
+        Statement:
+        - Action: 's3:GetObject'
+          Effect: Allow
+          Resource: !Sub 'arn:aws:s3:::${WebHostingBucket}/*'
+          Principal:
+            CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        CustomErrorResponses:
+        - ErrorCode: 403 # not found
+          ResponseCode: 404
+          ResponsePagePath: '/404.html'
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          CachedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          Compress: true
+          DefaultTTL: 3600
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          MaxTTL: 86400
+          MinTTL: 60
+          TargetOriginId: s3origin
+          ViewerProtocolPolicy: 'allow-all'
+        DefaultRootObject: 'index.html'
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+        - DomainName: !GetAtt 'WebHostingBucket.DomainName'
+          Id: s3origin
+          S3OriginConfig:
+            OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        PriceClass: 'PriceClass_All'
+  PublishUser:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: !Sub 'Read-${WebHostingBucket}'
+          PolicyDocument:
+            Statement:
+            - Action:
+              - s3:DeleteObject
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:PutObject
+              Effect: Allow
+              Resource:
+              - !Sub 'arn:aws:s3:::${WebHostingBucket}'
+              - !Sub 'arn:aws:s3:::${WebHostingBucket}/*'
+  PublishUserCredentials:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref PublishUser
 Outputs:
   ReadUserAccessKeyId:
-    Description: 'S3 Read Access Key'
+    Description: 'Storage read access key'
     Value: !Ref ReadUserCredentials
   ReadUserAccessKeySecret:
-    Description: 'S3 Read Secret Key'
+    Description: 'Storage read secret key'
     Value: !GetAtt ReadUserCredentials.SecretAccessKey
   StorageBucketName:
     Description: 'Name of storage bucket'
     Value: !Ref DashboardStorageBucket
+  PublishUserAccessKeyId:
+    Description: 'Web hosting publish access key'
+    Value: !Ref PublishUserCredentials
+  PublishUserAccessKeySecret:
+    Description: 'Web hosting publish secret key'
+    Value: !GetAtt PublishUserCredentials.SecretAccessKey
+  WebHostingBucketName:
+    Description: 'Name of web hosting bucket'
+    Value: !Ref WebHostingBucket
