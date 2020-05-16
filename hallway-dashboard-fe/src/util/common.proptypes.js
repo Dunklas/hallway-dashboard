@@ -21,8 +21,6 @@ export const departureRaw = PropTypes.shape({
 
 const weatherForecastCommon = {
 	icon: PropTypes.string.isRequired,
-	latitude: PropTypes.number.isRequired,
-	longitude: PropTypes.number.isRequired,
 	temperature: PropTypes.number.isRequired,
 	precipIntensity: PropTypes.number,
 	precipProbability: PropTypes.number,

@@ -53,19 +53,7 @@ describe('Weather Reducer', () => {
 				time: "2019-06-28T23:00:00Z",
 				windGust: 6.99,
 				windSpeed: 3.38,
-			},
-			{
-				icon: "partly-cloudy-night",
-				latitude: 57.734112,
-				longitude: 11.889842,
-				precipIntensity: 0,
-				precipProbability: 0,
-				precipType: "",
-				temperature: 14.69,
-				time: "2019-06-29T00:00:00Z",
-				windGust: 7.99,
-				windSpeed: 3.83,
-			},
+			}
 		];
 		expect(weatherReducer(loadingState, {
 			type: actionTypes.GET_WEATHER_SUCCESS,
