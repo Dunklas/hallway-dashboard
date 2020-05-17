@@ -70,13 +70,13 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       CorsConfiguration:
-        - CorsRules:
+        CorsRules:
           - AllowedOrigins:
               - !GetAtt CloudFrontDistribution.DomainName
             AllowedMethods:
               - GET
             AllowedHeaders:
-              - '*'
+              - "*"
   DashboardLambdaEventRule:
     Type: AWS::Events::Rule
     Properties:
