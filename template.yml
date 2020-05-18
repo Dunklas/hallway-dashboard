@@ -72,7 +72,8 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedOrigins:
-              - !GetAtt CloudFrontDistribution.DomainName
+              - !Sub http://${CloudFrontDistribution.DomainName}
+              - !Sub http://${WebHostingBucket.DomainName}
             AllowedMethods:
               - GET
             AllowedHeaders:
