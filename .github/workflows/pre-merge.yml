@@ -34,7 +34,7 @@ jobs:
       run: rustup target add x86_64-unknown-linux-musl
     - name: Build
       run: |
-        cargo build --release --target x86_64-unknown-linux-musl
+        (cd hallway-dashboard-be && cargo build --release --target x86_64-unknown-linux-musl)
         zip -j lambda.zip ./hallway-dashboard-be/target/x86_64-unknown-linux-musl/release/bootstrap
     - name: Save artifact
       run: |
