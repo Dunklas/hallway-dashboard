@@ -31,7 +31,7 @@ jobs:
         PublicTransportStop=${{ secrets.PUBLIC_TRANSPORT_STOP }} \
         PublicTransportDirection=${{ secrets.PUBLIC_TRANSPORT_DIRECTION }}
   build-and-deploy-frontend:
-    needs: build-and-deploy-backend
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
