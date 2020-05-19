@@ -22,10 +22,10 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Calculate lambda SHA256
       run: |
-        LAMBDA_SHA256=`sha256sum /github/home/be/lambda-$GITHUB_SHA.zip | cut -d" " -f1`
+        LAMBDA_SHA256=`sha256sum $HOME/be/lambda-$GITHUB_SHA.zip | cut -d" " -f1`
         echo "::set-env name=CHECKSUM::$LAMBDA_SHA256"
     - name: Upload lambda to S3
-      run: aws s3 cp /github/home/be/lambda-$GITHUB_SHA.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
+      run: aws s3 cp $HOME/be/lambda-$GITHUB_SHA.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
     - name: Update S3 key for lambda
       run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$CHECKSUM/" template.yml
     - name: Deploy to AWS
