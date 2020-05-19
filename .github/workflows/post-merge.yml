@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build-and-deploy-backend:
+  deploy-backend:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -20,14 +20,8 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-    - name: Calculate lambda SHA256
-      run: |
-        LAMBDA_SHA256=`sha256sum $GITHUB_WORKSPACE/be/lambda-$GITHUB_SHA.zip | cut -d" " -f1`
-        echo "::set-env name=CHECKSUM::$LAMBDA_SHA256"
-    - name: Upload lambda to S3
-      run: aws s3 cp $GITHUB_WORKSPACE/be/lambda-$GITHUB_SHA.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
     - name: Update S3 key for lambda
-      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$CHECKSUM/" template.yml
+      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$GITHUB_SHA/" template.yml
     - name: Deploy to AWS
       run: |
         aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides \

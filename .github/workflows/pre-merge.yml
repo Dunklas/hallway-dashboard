@@ -36,10 +36,14 @@ jobs:
       run: |
         (cd hallway-dashboard-be && cargo build --release --target x86_64-unknown-linux-musl)
         zip -j lambda.zip ./hallway-dashboard-be/target/x86_64-unknown-linux-musl/release/bootstrap
-    - name: Save artifact
-      run: |
-        mkdir $GITHUB_WORKSPACE/be
-        mv lambda.zip $GITHUB_WORKSPACE/be/lambda-$GITHUB_SHA.zip
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Upload lambda to S3
+      run: aws s3 cp lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$GITHUB_SHA
 
 
   build-frontend:
