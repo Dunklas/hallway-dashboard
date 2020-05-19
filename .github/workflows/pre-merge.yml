@@ -38,8 +38,8 @@ jobs:
         zip -j lambda.zip ./hallway-dashboard-be/target/x86_64-unknown-linux-musl/release/bootstrap
     - name: Save artifact
       run: |
-        mkdir /github/home/be
-        mv lambda.zip /github/home/be/lambda-$GITHUB_SHA.zip
+        mkdir $HOME/be
+        mv lambda.zip $HOME/be/lambda-$GITHUB_SHA.zip
 
 
   build-frontend:
