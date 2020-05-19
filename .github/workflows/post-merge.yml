@@ -14,15 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install required tools
-      run: sudo apt install musl-tools -y
-    - name: Add target
-      run: rustup target add x86_64-unknown-linux-musl
-    - name: Build
-      run: |
-        cd hallway-dashboard-be
-        cargo build --release --target x86_64-unknown-linux-musl
-        zip -j lambda.zip ./target/x86_64-unknown-linux-musl/release/bootstrap
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -31,10 +22,10 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Calculate lambda SHA256
       run: |
-        LAMBDA_SHA256=`sha256sum hallway-dashboard-be/lambda.zip | cut -d" " -f1`
+        LAMBDA_SHA256=`sha256sum $HOME/be/lambda-$GITHUB_SHA.zip | cut -d" " -f1`
         echo "::set-env name=CHECKSUM::$LAMBDA_SHA256"
     - name: Upload lambda to S3
-      run: aws s3 cp hallway-dashboard-be/lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
+      run: aws s3 cp $HOME/be/lambda-$GITHUB_SHA.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
     - name: Update S3 key for lambda
       run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$CHECKSUM/" template.yml
     - name: Deploy to AWS
