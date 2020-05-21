@@ -63,8 +63,8 @@ fn server_url() -> String {
     return url;
 }
 
-pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherError> {
-    let raw_response = get_weather_via_http(api_key)?;
+pub fn get_weather_forecast(api_key: String, latitude: String, longitude: String) -> Result<Vec<Weather>, WeatherError> {
+    let raw_response = get_weather_via_http(api_key, latitude, longitude)?;
     let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
         Ok(parsed) => parsed,
         Err(_e) => {
@@ -76,8 +76,8 @@ pub fn get_weather_forecast(api_key: String) -> Result<Vec<Weather>, WeatherErro
     return Ok(response.hourly.data);
 }
 
-fn get_weather_via_http(api_key: String) -> Result<Vec::<u8>, WeatherError> {
-    let res = ureq::get(&[server_url(), format!("/forecast/{}/11.8898418,57.734112?units=si&exclude=currently,minutely,daily,alerts,flags", api_key)].join(""))
+fn get_weather_via_http(api_key: String, latitude: String, longitude: String) -> Result<Vec::<u8>, WeatherError> {
+    let res = ureq::get(&[server_url(), format!("/forecast/{}/{},{}?units=si&exclude=currently,minutely,daily,alerts,flags", api_key, latitude, longitude)].join(""))
         .call();
     if !res.ok() {
         return Err(WeatherError{
@@ -103,12 +103,12 @@ mod tests {
 
     #[test]
     fn test_weather() {
-        let mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+        let mock = mock("GET", Matcher::Regex(r"^/forecast/.*/57.734112,11.8898418\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_header("content-type", "application/json; charset=utf-8")
             .with_status(200)
             .with_body_from_file("files/weather.json")
             .create();
-        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string(), "57.734112".to_string(), "11.8898418".to_string());
         mock.assert();
         assert!(weather_forecast_response.is_ok());
 
@@ -132,7 +132,7 @@ mod tests {
     fn test_weather_5xx_error() {
         let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_status(500);
-        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string(), "0.0".to_string(), "0.0".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
     }
@@ -141,7 +141,7 @@ mod tests {
     fn test_weather_4xx_error() {
         let _mock = mock("GET", Matcher::Regex(r"^/forecast/.*/\d+\.\d+,\d+\.\d+\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_status(400);
-        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string(), "0.0".to_string(), "0.0".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while making weather API call", weather_forecast_response.unwrap_err().message);
     }
@@ -153,7 +153,7 @@ mod tests {
             .with_status(200)
             .with_body_from_file("files/weather_bad_structure.json")
             .create();
-        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string(), "0.0".to_string(), "0.0".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
     }
@@ -165,7 +165,7 @@ mod tests {
             .with_status(200)
             .with_body("Some messed up body")
             .create();
-        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string());
+        let weather_forecast_response = get_weather_forecast("SOME_API_KEY".to_string(), "0.0".to_string(), "0.0".to_string());
         assert!(weather_forecast_response.is_err());
         assert_eq!("Failed while parsing weather API response", weather_forecast_response.unwrap_err().message);
     }
