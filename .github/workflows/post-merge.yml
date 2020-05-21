@@ -10,33 +10,22 @@ on:
 
 jobs:
 
-  build-and-deploy-backend:
+  deploy-backend:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install required tools
-      run: sudo apt install musl-tools -y
-    - name: Add target
-      run: rustup target add x86_64-unknown-linux-musl
-    - name: Build
-      run: |
-        cd hallway-dashboard-be
-        cargo build --release --target x86_64-unknown-linux-musl
-        zip -j lambda.zip ./target/x86_64-unknown-linux-musl/release/bootstrap
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-    - name: Calculate lambda SHA256
+    - name: Obtain PR number
       run: |
-        LAMBDA_SHA256=`sha256sum hallway-dashboard-be/lambda.zip | cut -d" " -f1`
-        echo "::set-env name=CHECKSUM::$LAMBDA_SHA256"
-    - name: Upload lambda to S3
-      run: aws s3 cp hallway-dashboard-be/lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/hallway-dashboard-$CHECKSUM
+        PR_NUMBER=`curl -s -H "Accept: application/vnd.github.groot-preview+json" https://api.github.com/repos/Dunklas/hallway-dashboard/commits/$GITHUB_SHA/pulls | jq -r '.[0].number'`
+        echo "::set-env name=PR_NUMBER::$PR_NUMBER"
     - name: Update S3 key for lambda
-      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$CHECKSUM/" template.yml
+      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$PR_NUMBER/" template.yml
     - name: Deploy to AWS
       run: |
         aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides \
@@ -46,9 +35,10 @@ jobs:
         PublicTransportStop=${{ secrets.PUBLIC_TRANSPORT_STOP }} \
         PublicTransportDirection=${{ secrets.PUBLIC_TRANSPORT_DIRECTION }}
   build-and-deploy-frontend:
-    needs: build-and-deploy-backend
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:

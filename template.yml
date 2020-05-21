@@ -68,6 +68,15 @@ Resources:
           PUBLIC_TRANSPORT_DIRECTION: !Ref PublicTransportDirection
   DashboardStorageBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - !Sub http://${CloudFrontDistribution.DomainName}
+            AllowedMethods:
+              - GET
+            AllowedHeaders:
+              - "*"
   DashboardLambdaEventRule:
     Type: AWS::Events::Rule
     Properties:
