@@ -22,7 +22,8 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Obtain PR number
       run: |
-        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo $GITHUB_REF
+        PR_NUMBER=`echo $GITHUB_REF | cut -d "/" -f 3`
         echo "::set-env name=PR_NUMBER::$PR_NUMBER"
     - name: Update S3 key for lambda
       run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$PR_NUMBER/" template.yml
