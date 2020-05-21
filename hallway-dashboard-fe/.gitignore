@@ -21,3 +21,6 @@ sketch
 
 .env
 build
+
+# Cypress
+cypress/videos/*

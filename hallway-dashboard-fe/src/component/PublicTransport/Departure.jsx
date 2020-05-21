@@ -42,16 +42,16 @@ const Departure = (props) => {
 		const { time, realTime } = departure;
 
 		if (!realTime) {
-			return <div className={styles.time}>{time.format('HH:mm')}</div>
+			return <div className={styles.time} data-test={'departure-time'}>{time.format('HH:mm')}</div>
 		}
 
 		const deviationDiff = realTime.diff(time, 'minutes');
 		if (deviationDiff === 0) {
-			return <div className={styles.time}>{time.format('HH:mm')}</div>
+			return <div className={styles.time} data-test={'departure-time'}>{time.format('HH:mm')}</div>
 		}
 
 		const deviationDiffDisplay = deviationDiff < 0 ? "-" : "+" + deviationDiff;
-		return <div className={styles.time}>
+		return <div className={styles.time} data-test={'departure-time'}>
 			<p>{time.format('HH:mm')} ({deviationDiffDisplay})</p>
 		</div>
 	};

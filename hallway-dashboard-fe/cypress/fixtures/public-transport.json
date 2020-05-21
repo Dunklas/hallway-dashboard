@@ -1,0 +1,177 @@
+[
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T20:54:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ãstra sjukhuset"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:04:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:06:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:14:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ãstra sjukhuset"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:24:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:26:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:34:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ãstra sjukhuset"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:44:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Jaegerdorffsplatsen"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:46:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T21:54:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ãstra sjukhuset"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:04:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:06:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:14:00Z",
+    "realTime": null,
+    "direction": "Virginsgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:25:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Jaegerdorffsplatsen"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:31:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:32:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ullevi Norra"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T22:44:00Z",
+    "realTime": null,
+    "direction": "Virginsgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T23:13:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Ullevi Norra"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-21T23:41:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Centralst Drottningt"
+  },
+  {
+    "number": "5",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T00:11:00Z",
+    "realTime": null,
+    "direction": "GÃ¶teborg Centralst Drottningt"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T02:29:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T02:46:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "25",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T03:01:00Z",
+    "realTime": null,
+    "direction": "ÃlegÃ¥rden (MÃ¶lndal kn)"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T03:01:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  },
+  {
+    "number": "6",
+    "stop": "GÃ¶teborg Temperaturgatan",
+    "time": "2020-05-22T03:11:00Z",
+    "realTime": null,
+    "direction": "Kortedala Aprilgatan (GÃ¶teborg kn)"
+  }
+]

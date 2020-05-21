@@ -18,6 +18,7 @@
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"test-ci": "CI=true react-scripts test",
+		"cypress-ci": "node_modules/cypress/bin/cypress run",
 		"eject": "react-scripts eject"
 	},
 	"eslintConfig": {
@@ -36,6 +37,7 @@
 		]
 	},
 	"devDependencies": {
+		"cypress": "^4.6.0",
 		"redux-mock-store": "1.5.3"
 	}
 }
