@@ -26,8 +26,8 @@ jobs:
     - name: Browser tests (frontend)
       run: |
         cd hallway-dashboard-fe
-        yarn global add wait-on
-        yarn start & wait-on http://localhost:3000
+        yarn add wait-on
+        yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
         yarn run cypress-ci
 
 
