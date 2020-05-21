@@ -30,8 +30,10 @@ jobs:
       run: |
         aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides \
         S3ArtifactBucket=${{ secrets.S3_ARTIFACT_BUCKET }} \
-        DarkSkyApiKey=${{ secrets.DARK_SKY_API_KEY }} \
-        TrafiklabApiKey=${{ secrets.TRAFIKLAB_API_KEY }} \
+        WeatherApiKey=${{ secrets.WEATHER_API_KEY }} \
+        WeatherLongitude=${{ secrets.WEATHER_LONGITUDE }} \
+        WeatherLatitude=${{ secrets.WEATHER_LATITUDE }} \
+        PublicTransportApiKey=${{ secrets.PUBLIC_TRANSPORT_API_KEY }} \
         PublicTransportStop=${{ secrets.PUBLIC_TRANSPORT_STOP }} \
         PublicTransportDirection=${{ secrets.PUBLIC_TRANSPORT_DIRECTION }}
   build-and-deploy-frontend:
