@@ -20,8 +20,12 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
+    - name: Obtain PR number
+      run: |
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo "::set-env name=PR_NUMBER::$PR_NUMBER"
     - name: Update S3 key for lambda
-      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$GITHUB_SHA/" template.yml
+      run: sed -i "s/S3-KEY-SET-IN-PIPELINE/hallway-dashboard-$PR_NUMBER/" template.yml
     - name: Deploy to AWS
       run: |
         aws cloudformation deploy --template-file template.yml --stack-name hallway-dashboard --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides \
