@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
     - 'hallway-dashboard-be/**'
+    - 'hallway-dashboard-fe/**'
     - 'template.yml'
     - '.github/**'
 
