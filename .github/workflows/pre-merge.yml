@@ -23,6 +23,13 @@ jobs:
       run: (cd hallway-dashboard-be && cargo test -- --test-threads=1)
     - name: Unit tests (frontend)
       run: (cd hallway-dashboard-fe && yarn && yarn run test-ci)
+    - name: Browser tests (frontend)
+      run: |
+        yarn
+        yarn global add wait-on
+        yarn start & wait-on http://localhost:3000
+        yarn run cypress-ci
+
 
   build-backend:
     runs-on: ubuntu-latest
