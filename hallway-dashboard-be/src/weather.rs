@@ -77,7 +77,7 @@ pub fn get_weather_forecast(api_key: String, latitude: String, longitude: String
 }
 
 fn get_weather_via_http(api_key: String, latitude: String, longitude: String) -> Result<Vec::<u8>, WeatherError> {
-    let res = ureq::get(&[server_url(), format!("/forecast/{}/{},{}?units=si&exclude=currently,minutely,daily,alerts,flags", api_key, longitude, latitude)].join(""))
+    let res = ureq::get(&[server_url(), format!("/forecast/{}/{},{}?units=si&exclude=currently,minutely,daily,alerts,flags", api_key, latitude, longitude)].join(""))
         .call();
     if !res.ok() {
         return Err(WeatherError{
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn test_weather() {
-        let mock = mock("GET", Matcher::Regex(r"^/forecast/.*/11.8898418,57.734112\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
+        let mock = mock("GET", Matcher::Regex(r"^/forecast/.*/57.734112,11.8898418\?units=si&exclude=currently,minutely,daily,alerts,flags".to_string()))
             .with_header("content-type", "application/json; charset=utf-8")
             .with_status(200)
             .with_body_from_file("files/weather.json")
