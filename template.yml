@@ -7,12 +7,18 @@ Parameters:
   S3ArtifactBucket:
     Type: String
     Description: S3 bucket where lambda artifacts are stored
-  DarkSkyApiKey:
+  WeatherApiKey:
     Type: String
-    Description: API Key for Dark Sky
-  TrafiklabApiKey:
+    Description: API Key for weather
+  WeatherLongitude:
     Type: String
-    Description: API Key for Trafiklab
+    Description: Longitude to show weather data for
+  WeatherLatitude:
+    Type: String
+    Description: Latitude to show weather data for
+  PublicTransportApiKey:
+    Type: String
+    Description: API Key for public transport
   PublicTransportStop:
     Type: String
     Description: Stop id to show departures for
@@ -62,8 +68,10 @@ Resources:
       Environment:
         Variables:
           STORAGE_BUCKET: !Ref DashboardStorageBucket
-          DARK_SKY_API_KEY: !Ref DarkSkyApiKey
-          TRAFIKLAB_API_KEY: !Ref TrafiklabApiKey
+          WEATHER_API_KEY: !Ref WeatherApiKey
+          WEATHER_LATITUDE: !Ref WeatherLatitude
+          WEATHER_LONGITUDE: !Ref WeatherLongitude
+          PUBLIC_TRANSPORT_API_KEY: !Ref PublicTransportApiKey
           PUBLIC_TRANSPORT_STOP: !Ref PublicTransportStop
           PUBLIC_TRANSPORT_DIRECTION: !Ref PublicTransportDirection
   DashboardStorageBucket:

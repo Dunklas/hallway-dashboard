@@ -11,8 +11,10 @@ App to show public transport and weather for a given coordinate.
    - AWS_ACCESS_KEY_ID
    - AWS_SECRET_ACCESS_KEY
    - S3_ARTIFACT_BUCKET
-   - DARK_SKY_API_KEY
-   - TRAFIKLAB_API_KEY
+   - WEATHER_API_KEY
+   - WEATHER_LONGITUDE
+   - WEATHER_LATITUDE
+   - PUBLIC_TRANSPORT_API_KEY
    - PUBLIC_TRANSPORT_STOP
    - PUBLIC_TRANSPORT_DIRECTION
      - Optional

@@ -34,14 +34,28 @@ fn handle_request(_e: EmptyEvent, _c: Context) -> Result<EmptyOutput, HandlerErr
 
 async fn inner_handle_request() {
     let storage_bucket_name = env::var("STORAGE_BUCKET").unwrap();
-    let dark_sky_api_key = env::var("DARK_SKY_API_KEY").unwrap();
-    let trafiklab_api_key = env::var("TRAFIKLAB_API_KEY").unwrap();
-    let stop_id = env::var("PUBLIC_TRANSPORT_STOP").unwrap();
-    let direction = env::var("PUBLIC_TRANSPORT_DIRECTION").ok();
+    let weather_api_key = env::var("WEATHER_API_KEY").unwrap();
+    let weather_latitude = env::var("WEATHER_LATITUDE").unwrap();
+    let weather_longitude = env::var("WEATHER_LONGITUDE").unwrap();
+    let public_transport_api_key = env::var("PUBLIC_TRANSPORT_API_KEY").unwrap();
+    let public_transport_stop_id = env::var("PUBLIC_TRANSPORT_STOP").unwrap();
+    let public_transport_direction = env::var("PUBLIC_TRANSPORT_DIRECTION").ok();
     // TODO: Should do something with these values
     let (_first, _second) = tokio::join!(
-        tokio::spawn(get_and_store_weather(dark_sky_api_key, get_aws_region(), storage_bucket_name.clone())),
-        tokio::spawn(get_and_store_public_transport(trafiklab_api_key, stop_id, direction, get_aws_region(), storage_bucket_name.clone()))
+        tokio::spawn(get_and_store_weather(
+            weather_api_key,
+            weather_latitude,
+            weather_longitude,
+            get_aws_region(),
+            storage_bucket_name.clone()
+        )),
+        tokio::spawn(get_and_store_public_transport(
+            public_transport_api_key,
+            public_transport_stop_id,
+            public_transport_direction,
+            get_aws_region(),
+            storage_bucket_name.clone()
+        ))
     );
 }
 
@@ -51,9 +65,9 @@ fn get_aws_region() -> Region {
     ).unwrap();
 }
 
-async fn get_and_store_weather(dark_sky_api_key: String, aws_region: Region, bucket_name: String) {
+async fn get_and_store_weather(weather_api_key: String, latitude: String, longitude: String, aws_region: Region, bucket_name: String) {
     info!("Start fetching weather");
-    let weather = match weather::get_weather_forecast(dark_sky_api_key) {
+    let weather = match weather::get_weather_forecast(weather_api_key, latitude, longitude) {
         Ok(weather) => weather,
         Err(e) => {
             warn!("Failed to get weather: {}", e);
@@ -79,9 +93,9 @@ async fn get_and_store_weather(dark_sky_api_key: String, aws_region: Region, buc
     info!("Stored weather data successfully");
 }
 
-async fn get_and_store_public_transport(trafiklab_api_key: String, stop_id: String, direction: Option<String>, aws_region: Region, bucket_name: String) {
+async fn get_and_store_public_transport(public_transport_api_key: String, stop_id: String, direction: Option<String>, aws_region: Region, bucket_name: String) {
     info!("Start fetching public transport departures");
-    let public_transport = match public_transport::get_public_transport(trafiklab_api_key, stop_id, direction) {
+    let public_transport = match public_transport::get_public_transport(public_transport_api_key, stop_id, direction) {
         Ok(public_transport) => public_transport,
         Err(e) => {
             warn!("Failed to get public transport times: {}", e);
