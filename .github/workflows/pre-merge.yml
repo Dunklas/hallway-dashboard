@@ -29,6 +29,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run
+      env:
+        LANG: sv_SE.UTF-8
       run: |
         cd hallway-dashboard-fe
         yarn
