@@ -33,6 +33,10 @@ jobs:
         cd hallway-dashboard-fe
         yarn
         yarn add wait-on
+        REACT_APP_AWS_REGION=${{ secrets.AWS_REGION }} \
+        REACT_APP_S3_READ_ACCESS_KEY_ID=some-key-id \
+        REACT_APP_S3_READ_ACCESS_KEY_SECRET=some-key-secret \
+        REACT_APP_STORAGE_BUCKET=some-bucket \
         yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
         yarn run cypress-ci
     - uses: actions/upload-artifact@v2
