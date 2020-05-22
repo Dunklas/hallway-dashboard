@@ -39,7 +39,7 @@ jobs:
       if: ${{ failure() }}
       with:
         name: cypess-video
-        path: cypress/videos/
+        path: hallway-dashboard-fe/cypress/videos/
 
 
   build-backend:
