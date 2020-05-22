@@ -38,6 +38,8 @@ jobs:
         REACT_APP_S3_READ_ACCESS_KEY_SECRET=some-key-secret \
         REACT_APP_STORAGE_BUCKET=some-bucket \
         yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
+        sudo locale-gen sv_SE.UTF-8
+        sudo update-locale LANG=sv_SE.UTF-8
         yarn run cypress-ci
     - uses: actions/upload-artifact@v2
       if: ${{ failure() }}
