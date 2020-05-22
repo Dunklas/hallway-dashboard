@@ -35,6 +35,10 @@ jobs:
         yarn add wait-on
         yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
         yarn run cypress-ci
+    - uses: actions/upload-artifact@v2
+      with:
+        name: cypess-video
+        path: cypress/videos/
 
 
   build-backend:
