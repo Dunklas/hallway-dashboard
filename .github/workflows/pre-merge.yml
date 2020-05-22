@@ -23,9 +23,15 @@ jobs:
       run: (cd hallway-dashboard-be && cargo test -- --test-threads=1)
     - name: Unit tests (frontend)
       run: (cd hallway-dashboard-fe && yarn && yarn run test-ci)
-    - name: Browser tests (frontend)
+
+  browser-test:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run
       run: |
         cd hallway-dashboard-fe
+        yarn
         yarn add wait-on
         yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
         yarn run cypress-ci
