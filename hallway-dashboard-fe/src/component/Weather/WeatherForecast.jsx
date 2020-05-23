@@ -64,7 +64,7 @@ const WeatherForecast = (props) => {
 					</div>
 					<div className={styles.overview}>
 						<span className={styles.timeLabel}>{time.format('HH:mm')}</span>
-						<span>{formatTemperature(temperature)} </span>
+						<span data-test={'weather-temperature'}>{formatTemperature(temperature)} </span>
 					</div>
 				</div>
 				<div className={styles.detailsContainer}>

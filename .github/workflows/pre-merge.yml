@@ -24,6 +24,28 @@ jobs:
     - name: Unit tests (frontend)
       run: (cd hallway-dashboard-fe && yarn && yarn run test-ci)
 
+  browser-test:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run
+      run: |
+        cd hallway-dashboard-fe
+        yarn
+        yarn add wait-on
+        REACT_APP_AWS_REGION=${{ secrets.AWS_REGION }} \
+        REACT_APP_S3_READ_ACCESS_KEY_ID=some-key-id \
+        REACT_APP_S3_READ_ACCESS_KEY_SECRET=some-key-secret \
+        REACT_APP_STORAGE_BUCKET=some-bucket \
+        yarn start & ./node_modules/wait-on/bin/wait-on http://localhost:3000
+        TZ=Europe/Stockholm yarn run cypress-ci
+    - uses: actions/upload-artifact@v2
+      if: ${{ failure() }}
+      with:
+        name: cypess-video
+        path: hallway-dashboard-fe/cypress/videos/
+
+
   build-backend:
     runs-on: ubuntu-latest
     steps:
