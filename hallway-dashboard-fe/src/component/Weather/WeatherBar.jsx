@@ -18,7 +18,12 @@ const WeatherBar = (props) => {
 
 	return (
 		<div className={styles.main}>
-			{weatherForecasts}
+			<div>
+				{weatherForecasts}
+			</div>
+			<div className={styles.weatherAttribution}>
+				<a href="https://darksky.net/poweredby/">Powered by Dark Sky</a>
+			</div>
 		</div>
 	);
 }

@@ -1,7 +1,30 @@
 .main {
 	width: 88vw;
 	height: 16vh;
+}
+
+.main div {
 	display: flex;
 	flex-direction: row;
 	box-sizing: border-box;
+}
+
+.weatherAttribution {
+	padding: 4px 10px;
+	display: flex;
+	justify-content: flex-end;
+	font-size: .8em;
+}
+
+.weatherAttribution a:link {
+	color: white;
+}
+.weatherAttribution a:visited {
+	color: white;
+}
+.weatherAttribution a:hover {
+	color: white;
+}
+.weatherAttribution a:active {
+	color: white;
 }
