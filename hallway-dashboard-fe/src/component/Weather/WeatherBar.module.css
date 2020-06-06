@@ -1,9 +1,6 @@
 .main {
 	width: 88vw;
-	height: 16vh;
-}
-
-.main div {
+	height: 14vh;
 	display: flex;
 	flex-direction: row;
 	box-sizing: border-box;
