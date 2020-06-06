@@ -18,8 +18,8 @@ const WeatherBar = (props) => {
 
 	return (
 		<>
-			<div>
-				<div className={styles.main}>
+			<div className={styles.main}>
+				<div className={styles.weatherContainer}>
 					{weatherForecasts}
 				</div>
 				<div className={styles.weatherAttribution}>
