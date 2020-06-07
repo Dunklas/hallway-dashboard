@@ -64,35 +64,20 @@ fn server_url() -> String {
 }
 
 pub fn get_weather_forecast(api_key: String, latitude: String, longitude: String) -> Result<Vec<Weather>, WeatherError> {
-    let raw_response = get_weather_via_http(api_key, latitude, longitude)?;
-    let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
-        Ok(parsed) => parsed,
-        Err(_e) => {
-            return Err(WeatherError{
-                message: "Failed while parsing weather API response".to_string()
-            });
-        }
-    };
-    return Ok(response.hourly.data);
-}
-
-fn get_weather_via_http(api_key: String, latitude: String, longitude: String) -> Result<Vec::<u8>, WeatherError> {
     let res = ureq::get(&[server_url(), format!("/forecast/{}/{},{}?units=si&exclude=currently,minutely,daily,alerts,flags", api_key, latitude, longitude)].join(""))
         .call();
-    if !res.ok() {
+     if !res.ok() {
         return Err(WeatherError{
             message: "Failed while making weather API call".to_string()
         });
     }
-    let bytes = match res.into_string() {
-        Ok(text) => text.into_bytes(),
-        Err(_e) => {
-            return Err(WeatherError{
-                message: "Failed while making weather API call".to_string()
+    let json = res.into_json_deserialize::<Response>(); 
+    if json.is_err() {
+        return Err(WeatherError{
+                message: "Failed while parsing weather API response".to_string()
             });
-        }
-    };
-    return Ok(bytes);
+    }
+    return Ok(json.unwrap().hourly.data);
 }
 
 #[cfg(test)]
