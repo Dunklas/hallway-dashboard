@@ -60,17 +60,26 @@ fn server_url() -> String {
 }
 
 pub fn get_public_transport(api_key: String, stop_id: String, direction: Option<String>) -> Result<Vec<Departure>, PublicTransportError> {
-    let raw_response = get_public_transport_via_http(api_key, stop_id, direction)?;
-    let response = match serde_json::from_slice::<Response>(raw_response.as_slice()) {
-        Ok(parsed) => parsed,
-        Err(_e) => {
-            return Err(PublicTransportError{
+    let mut query_string = format!("?key={}&id={}&passlist=0&format=json", api_key, stop_id);
+    if direction.is_some() {
+        query_string.push_str(&format!("&direction={}", direction.unwrap()));
+    }
+    let res = ureq::get(&[server_url(), "/v2/departureBoard".to_string()].join(""))
+        .query_str(&query_string)
+        .call();
+    if !res.ok() {
+        return Err(PublicTransportError{
+            message: "Failed while making public transport API call".to_string()
+        });
+    }
+    let json = res.into_json_deserialize::<Response>();
+    if json.is_err() {
+        return Err(PublicTransportError{
                 message: "Failed while parsing public transport API response".to_string()
             });
-        }
-    };
+    }
     let mut transformed_response = Vec::<Departure>::new();
-    for dep in response.departure {
+    for dep in json.unwrap().departure {
         let time = match to_datetime(dep.date, dep.time) {
             Some(time) => time,
             None => {
@@ -122,30 +131,6 @@ fn to_datetime(date: String, time: String) -> Option<DateTime<Utc>> {
         }
     };
     return Some(sweden_time.with_timezone(&Utc));
-}
-
-fn get_public_transport_via_http(api_key: String, stop_id: String, direction: Option<String>) -> Result<Vec::<u8>, PublicTransportError> {
-    let mut query_string = format!("?key={}&id={}&passlist=0&format=json", api_key, stop_id);
-    if direction.is_some() {
-        query_string.push_str(&format!("&direction={}", direction.unwrap()));
-    }
-    let res = ureq::get(&[server_url(), "/v2/departureBoard".to_string()].join(""))
-        .query_str(&query_string)
-        .call();
-    if !res.ok() {
-        return Err(PublicTransportError{
-            message: "Failed while making public transport API call".to_string()
-        });
-    }
-    let bytes = match res.into_string() {
-        Ok(text) => text.into_bytes(),
-        Err(_e) => {
-            return Err(PublicTransportError{
-                message: "Failed while making public transport API call".to_string()
-            });
-        }
-    };
-    return Ok(bytes);
 }
 
 #[cfg(test)]

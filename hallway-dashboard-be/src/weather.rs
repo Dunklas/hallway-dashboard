@@ -72,7 +72,7 @@ pub fn get_weather_forecast(api_key: String, latitude: String, longitude: String
         });
     }
     let json = res.into_json_deserialize::<Response>(); 
-    if !json.is_ok() {
+    if json.is_err() {
         return Err(WeatherError{
                 message: "Failed while parsing weather API response".to_string()
             });
